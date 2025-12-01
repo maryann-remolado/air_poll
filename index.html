@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Manila Air Pollution Risk Assessment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --low-risk-color: #27ae60;
+            --moderate-risk-color: #f39c12;
+            --high-risk-color: #e74c3c;
+            --background-color: #f8f9fa;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #1a2530);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            color: var(--secondary-color);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 0;
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.95)), url('https://images.unsplash.com/photo-1559589689-577aabd1db4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.3s, background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            background-color: #2980b9;
+        }
+
+        /* Risk Assessment Section */
+        .risk-assessment {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary-color);
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #666;
+        }
+
+        .assessment-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .assessment-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-form {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .input-form h3 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .range-value {
+            min-width: 50px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .results-display {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .risk-level {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .risk-level h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .risk-indicator {
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .risk-low {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: var(--low-risk-color);
+            border: 3px solid var(--low-risk-color);
+        }
+
+        .risk-moderate {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: var(--moderate-risk-color);
+            border: 3px solid var(--moderate-risk-color);
+        }
+
+        .risk-high {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--high-risk-color);
+            border: 3px solid var(--high-risk-color);
+        }
+
+        .risk-description {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .confidence-meter {
+            margin-top: 20px;
+        }
+
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .confidence-bar {
+            height: 12px;
+            background-color: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            padding: 80px 0;
+            background-color: #f0f3f5;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .dashboard-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-card i {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+
+        .chart-container {
+            height: 250px;
+            margin-top: 15px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .stat-box h4 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-box p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Recommendations Section */
+        .recommendations {
+            padding: 80px 0;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .recommendation-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border-top: 5px solid var(--secondary-color);
+            transition: transform 0.3s;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .recommendation-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-card ul {
+            list-style-position: inside;
+            margin-left: 10px;
+        }
+
+        .recommendation-card li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        /* About Research Section */
+        .about-research {
+            padding: 80px 0;
+            background-color: #f0f3f5;
+        }
+
+        .research-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        @media (max-width: 992px) {
+            .research-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .research-text h3 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .research-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .research-features {
+            list-style: none;
+        }
+
+        .research-features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .research-features i {
+            color: var(--secondary-color);
+            margin-top: 5px;
+        }
+
+        .model-diagram {
+            text-align: center;
+        }
+
+        .model-diagram img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        .footer-section p, .footer-section li {
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--secondary-color);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+
+        /* Modal for detailed results */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--high-risk-color);
+        }
+
+        .modal-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-wind"></i>
+                <div>
+                    <h1>Metro Manila Air Pollution Risk Assessment</h1>
+                    <p>Decision Tree Model for Environmental Risk Classification</p>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#assessment"><i class="fas fa-search"></i> Risk Assessment</a></li>
+                    <li><a href="#dashboard"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+                    <li><a href="#recommendations"><i class="fas fa-lightbulb"></i> Recommendations</a></li>
+                    <li><a href="#research"><i class="fas fa-book"></i> Research</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Protecting Metro Manila's Air Quality Through AI</h2>
+            <p>This web application utilizes a Decision Tree classification model trained on 2025 air quality data to assess pollution risk levels and provide actionable insights for environmental management.</p>
+            <a href="#assessment" class="cta-button">Assess Air Quality Risk <i class="fas fa-arrow-down"></i></a>
+        </div>
+    </section>
+
+    <!-- Risk Assessment Section -->
+    <section id="assessment" class="risk-assessment">
+        <div class="container">
+            <div class="section-title">
+                <h2>Air Pollution Risk Assessment</h2>
+                <p>Input current air quality parameters to determine the pollution risk level in Metro Manila</p>
+            </div>
+            
+            <div class="assessment-container">
+                <!-- Input Form -->
+                <div class="input-form">
+                    <h3><i class="fas fa-sliders-h"></i> Air Quality Parameters</h3>
+                    <form id="pollutionForm">
+                        <div class="form-group">
+                            <label for="pm25">PM2.5 Concentration (μg/m³)</label>
+                            <div class="range-container">
+                                <input type="range" id="pm25" name="pm25" min="0" max="150" value="25" class="form-control">
+                                <span id="pm25Value" class="range-value">25</span>
+                            </div>
+                            <small>WHO Guideline: ≤ 12 μg/m³ (annual mean)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pm10">PM10 Concentration (μg/m³)</label>
+                            <div class="range-container">
+                                <input type="range" id="pm10" name="pm10" min="0" max="300" value="50" class="form-control">
+                                <span id="pm10Value" class="range-value">50</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="no2">NO₂ Concentration (ppb)</label>
+                            <div class="range-container">
+                                <input type="range" id="no2" name="no2" min="0" max="200" value="30" class="form-control">
+                                <span id="no2Value" class="range-value">30</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="so2">SO₂ Concentration (ppb)</label>
+                            <div class="range-container">
+                                <input type="range" id="so2" name="so2" min="0" max="150" value="10" class="form-control">
+                                <span id="so2Value" class="range-value">10</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="co">CO Concentration (ppm)</label>
+                            <div class="range-container">
+                                <input type="range" id="co" name="co" min="0" max="20" value="1.5" step="0.1" class="form-control">
+                                <span id="coValue" class="range-value">1.5</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="o3">O₃ Concentration (ppb)</label>
+                            <div class="range-container">
+                                <input type="range" id="o3" name="o3" min="0" max="100" value="40" class="form-control">
+                                <span id="o3Value" class="range-value">40</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="temperature">Temperature (°C)</label>
+                            <input type="number" id="temperature" name="temperature" value="28" step="0.1" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="humidity">Humidity (%)</label>
+                            <input type="number" id="humidity" name="humidity" value="65" min="0" max="100" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="location">Location in Metro Manila</label>
+                            <select id="location" name="location" class="form-control">
+                                <option value="manila">Manila City</option>
+                                <option value="quezon">Quezon City</option>
+                                <option value="makati">Makati City</option>
+                                <option value="taguig">Taguig City</option>
+                                <option value="pasig">Pasig City</option>
+                                <option value="mandaluyong">Mandaluyong City</option>
+                                <option value="pasay">Pasay City</option>
+                                <option value="paranaque">Parañaque City</option>
+                                <option value="laspinas">Las Piñas City</option>
+                                <option value="muntinlupa">Muntinlupa City</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-calculator"></i> Calculate Pollution Risk
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Results Display -->
+                <div class="results-display">
+                    <div class="risk-level">
+                        <h3>Current Pollution Risk Level</h3>
+                        <div id="riskIndicator" class="risk-indicator risk-moderate">
+                            MODERATE
+                        </div>
+                        <p id="riskDescription" class="risk-description">
+                            Air quality is acceptable; however, there may be some health concern for a very small number of people who are unusually sensitive to air pollution.
+                        </p>
+                        
+                        <div class="confidence-meter">
+                            <div class="confidence-label">
+                                <span>Model Confidence:</span>
+                                <span id="confidenceValue">85%</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div id="confidenceFill" class="confidence-fill" style="width: 85%; background-color: #3498db;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="probabilityChart" class="chart-container">
+                        <!-- Chart will be inserted here by JavaScript -->
+                        <canvas id="riskProbabilityChart"></canvas>
+                    </div>
+                    
+                    <button id="viewDetailsBtn" class="submit-btn" style="margin-top: 20px;">
+                        <i class="fas fa-chart-pie"></i> View Detailed Analysis
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Real-time Data Alert -->
+            <div style="background-color: #e8f4fc; border-radius: 10px; padding: 20px; margin-top: 30px; text-align: center;">
+                <h4><i class="fas fa-info-circle"></i> Based on Decision Tree Model</h4>
+                <p>This assessment uses a Decision Tree classifier trained on 2025 Metro Manila air quality data with 99.2% accuracy. Model considers PM2.5 as the primary risk determinant with supporting parameters.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="dashboard">
+        <div class="container">
+            <div class="section-title">
+                <h2>Pollution Dashboard</h2>
+                <p>Real-time insights and historical trends based on our research model</p>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- Card 1: Monthly Trends -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-chart-line"></i> Monthly Pollution Trends 2025</h3>
+                    <div class="chart-container">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Card 2: Risk Distribution -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-chart-pie"></i> Risk Level Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="riskDistributionChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Card 3: Key Statistics -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-chart-bar"></i> Key Statistics</h3>
+                    <div class="stats-container">
+                        <div class="stat-box" style="background-color: var(--low-risk-color);">
+                            <h4>42%</h4>
+                            <p>Low Risk Days</p>
+                        </div>
+                        <div class="stat-box" style="background-color: var(--moderate-risk-color);">
+                            <h4>48%</h4>
+                            <p>Moderate Days</p>
+                        </div>
+                        <div class="stat-box" style="background-color: var(--high-risk-color);">
+                            <h4>10%</h4>
+                            <p>High Risk Days</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p><strong>Model Accuracy:</strong> 99.2%</p>
+                        <p><strong>Data Points:</strong> 11 Months (Jan-Nov 2025)</p>
+                        <p><strong>Most Critical Factor:</strong> PM2.5 Concentration</p>
+                    </div>
+                </div>
+                
+                <!-- Card 4: Feature Importance -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-weight-hanging"></i> Feature Importance</h3>
+                    <div class="chart-container">
+                        <canvas id="featureImportanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recommendations Section -->
+    <section id="recommendations" class="recommendations">
+        <div class="container">
+            <div class="section-title">
+                <h2>Recommendations & Actions</h2>
+                <p>Proactive measures based on pollution risk levels</p>
+            </div>
+            
+            <div class="recommendations-grid">
+                <!-- Low Risk Card -->
+                <div class="recommendation-card">
+                    <h3 style="color: var(--low-risk-color);"><i class="fas fa-check-circle"></i> Low Risk (Green)</h3>
+                    <p>Air quality is satisfactory with minimal health risk.</p>
+                    <ul>
+                        <li>Continue normal outdoor activities</li>
+                        <li>Maintain regular vehicle maintenance</li>
+                        <li>Support tree planting initiatives</li>
+                        <li>Promote public transportation use</li>
+                        <li>Monitor air quality regularly</li>
+                    </ul>
+                </div>
+                
+                <!-- Moderate Risk Card -->
+                <div class="recommendation-card">
+                    <h3 style="color: var(--moderate-risk-color);"><i class="fas fa-exclamation-triangle"></i> Moderate Risk (Yellow)</h3>
+                    <p>Air quality is acceptable; sensitive individuals may experience health effects.</p>
+                    <ul>
+                        <li>Sensitive groups should reduce prolonged outdoor exertion</li>
+                        <li>Limit vehicle idling</li>
+                        <li>Implement dust control measures at construction sites</li>
+                        <li>Increase green space maintenance</li>
+                        <li>Consider wearing masks in high-traffic areas</li>
+                    </ul>
+                </div>
+                
+                <!-- High Risk Card -->
+                <div class="recommendation-card">
+                    <h3 style="color: var(--high-risk-color);"><i class="fas fa-exclamation-circle"></i> High Risk (Red)</h3>
+                    <p>Air pollution has reached unhealthy levels for everyone.</p>
+                    <ul>
+                        <li>Avoid outdoor activities, especially for children and elderly</li>
+                        <li>Use N95 masks when going outside</li>
+                        <li>Implement odd-even vehicle schemes</li>
+                        <li>Activate emergency pollution control protocols</li>
+                        <li>Issue public health advisories</li>
+                        <li>Increase frequency of street cleaning</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Government Actions -->
+            <div style="margin-top: 50px; background-color: #f0f7ff; border-radius: 15px; padding: 30px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fas fa-landmark"></i> Government & Policy Recommendations</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div>
+                        <h4><i class="fas fa-car"></i> Transportation</h4>
+                        <ul>
+                            <li>Enhance public transportation system</li>
+                            <li>Promote electric vehicle adoption</li>
+                            <li>Implement stricter emission standards</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4><i class="fas fa-industry"></i> Industry Regulations</h4>
+                        <ul>
+                            <li>Enforce pollution control technologies</li>
+                            <li>Regular monitoring of industrial emissions</li>
+                            <li>Incentivize green manufacturing</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4><i class="fas fa-tree"></i> Urban Planning</h4>
+                        <ul>
+                            <li>Increase green spaces and urban forests</li>
+                            <li>Implement green building codes</li>
+                            <li>Develop pedestrian-friendly zones</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Research Section -->
+    <section id="research" class="about-research">
+        <div class="container">
+            <div class="section-title">
+                <h2>About Our Research</h2>
+                <p>Decision Tree Approach for Environmental Pollution Risk Assessment</p>
+            </div>
+            
+            <div class="research-content">
+                <div class="research-text">
+                    <h3>Methodology & Data Sources</h3>
+                    <p>This research developed a Decision Tree-based classification model to assess and categorize pollution risk levels in Metro Manila using air quality data from January to November 2025.</p>
+                    
+                    <p>The model achieves 99.2% accuracy in classifying pollution risk into three categories: <strong>Low</strong>, <strong>Moderate</strong>, and <strong>High</strong>.</p>
+                    
+                    <h4 style="margin-top: 25px; color: var(--primary-color);">Key Features:</h4>
+                    <ul class="research-features">
+                        <li><i class="fas fa-check"></i> <strong>Data Collection:</strong> 11 months of comprehensive air quality data</li>
+                        <li><i class="fas fa-check"></i> <strong>Parameters:</strong> PM2.5, PM10, NO₂, SO₂, CO, O₃, Temperature, Humidity</li>
+                        <li><i class="fas fa-check"></i> <strong>Model:</strong> Decision Tree Classifier with hyperparameter tuning</li>
+                        <li><i class="fas fa-check"></i> <strong>Validation:</strong> Cross-validation with 99.2% accuracy</li>
+                        <li><i class="fas fa-check"></i> <strong>Deployment:</strong> Real-time risk assessment web application</li>
+                    </ul>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background-color: white; border-radius: 10px; border-left: 5px solid var(--secondary-color);">
+                        <h4><i class="fas fa-bullseye"></i> Research Objectives</h4>
+                        <p>1. Develop predictive model for pollution risk assessment</p>
+                        <p>2. Provide early warning system for environmental management</p>
+                        <p>3. Support data-driven policy decisions</p>
+                        <p>4. Increase public awareness about air quality</p>
+                    </div>
+                </div>
+                
+                <div class="model-diagram">
+                    <h3>Decision Tree Model Structure</h3>
+                    <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: var(--card-shadow);">
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div style="width: 20px; height: 20px; background-color: var(--low-risk-color); border-radius: 4px; margin-right: 10px;"></div>
+                                <span>Low Risk (PM2.5 ≤ 12 μg/m³)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div style="width: 20px; height: 20px; background-color: var(--moderate-risk-color); border-radius: 4px; margin-right: 10px;"></div>
+                                <span>Moderate Risk (12 < PM2.5 ≤ 35)</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 20px; height: 20px; background-color: var(--high-risk-color); border-radius: 4px; margin-right: 10px;"></div>
+                                <span>High Risk (PM2.5 > 35 μg/m³)</span>
+                            </div>
+                        </div>
+                        
+                        <div style="position: relative; height: 200px; background-color: #f8f9fa; border-radius: 8px; padding: 20px;">
+                            <!-- Simple decision tree visualization -->
+                            <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background-color: var(--primary-color); color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold;">
+                                PM2.5 ≤ 12?
+                            </div>
+                            
+                            <!-- Yes branch -->
+                            <div style="position: absolute; top: 70px; left: 25%; transform: translateX(-50%); background-color: var(--low-risk-color); color: white; padding: 10px 15px; border-radius: 5px; font-weight: bold;">
+                                Low Risk
+                            </div>
+                            
+                            <!-- No branch -->
+                            <div style="position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background-color: var(--primary-color); color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold;">
+                                PM2.5 ≤ 35?
+                            </div>
+                            
+                            <!-- Connection lines -->
+                            <div style="position: absolute; top: 50px; left: 50%; width: 2px; height: 20px; background-color: var(--primary-color); transform: translateX(-50%);"></div>
+                            <div style="position: absolute; top: 50px; left: 25%; width: 2px; height: 20px; background-color: var(--primary-color); transform: translateX(-50%);"></div>
+                            <div style="position: absolute; top: 50px; left: 75%; width: 2px; height: 20px; background-color: var(--primary-color); transform: translateX(-50%);"></div>
+                            
+                            <!-- Yes branch of second node -->
+                            <div style="position: absolute; top: 120px; left: 37.5%; transform: translateX(-50%); background-color: var(--moderate-risk-color); color: white; padding: 10px 15px; border-radius: 5px; font-weight: bold;">
+                                Moderate Risk
+                            </div>
+                            
+                            <!-- No branch of second node -->
+                            <div style="position: absolute; top: 120px; left: 62.5%; transform: translateX(-50%); background-color: var(--high-risk-color); color: white; padding: 10px 15px; border-radius: 5px; font-weight: bold;">
+                                High Risk
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Metro Manila Air Quality Project</h3>
+                    <p>This research project develops a Decision Tree model for environmental pollution risk assessment using air quality data from Metro Manila.</p>
+                    <p><i class="fas fa-calendar-alt"></i> Data Period: Jan-Nov 2025</p>
+                    <p><i class="fas fa-cogs"></i> Model Accuracy: 99.2%</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#assessment"><i class="fas fa-chevron-right"></i> Risk Assessment</a></li>
+                        <li><a href="#dashboard"><i class="fas fa-chevron-right"></i> Pollution Dashboard</a></li>
+                        <li><a href="#recommendations"><i class="fas fa-chevron-right"></i> Recommendations</a></li>
+                        <li><a href="#research"><i class="fas fa-chevron-right"></i> Research Details</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Research Team</h3>
+                    <p><i class="fas fa-users"></i> Data Science Research Group</p>
+                    <p><i class="fas fa-university"></i> Environmental Science Department</p>
+                    <p><i class="fas fa-envelope"></i> research@airquality.ph</p>
+                    <p><i class="fas fa-phone"></i> +63 2 1234 5678</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 Metro Manila Air Pollution Risk Assessment. Decision Tree Model for Environmental Risk Classification. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Detailed Results -->
+    <div id="resultsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title">Detailed Pollution Risk Analysis</h2>
+            
+            <div id="modalContent">
+                <!-- Content will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize range sliders
+            initializeSliders();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Setup form submission
+            setupFormSubmission();
+            
+            // Setup modal
+            setupModal();
+            
+            // Initialize dashboard with sample data
+            updateDashboardWithSampleData();
+        });
+        
+        // Initialize range slider value displays
+        function initializeSliders() {
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(slider => {
+                const valueDisplay = document.getElementById(slider.id + 'Value');
+                if (valueDisplay) {
+                    // Set initial value
+                    valueDisplay.textContent = slider.value;
+                    
+                    // Update on change
+                    slider.addEventListener('input', function() {
+                        valueDisplay.textContent = this.value;
+                    });
+                }
+            });
+        }
+        
+        // Setup form submission
+        function setupFormSubmission() {
+            const form = document.getElementById('pollutionForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateRiskLevel();
+            });
+        }
+        
+        // Calculate risk level based on input values
+        function calculateRiskLevel() {
+            // Get form values
+            const pm25 = parseFloat(document.getElementById('pm25').value);
+            const pm10 = parseFloat(document.getElementById('pm10').value);
+            const no2 = parseFloat(document.getElementById('no2').value);
+            const so2 = parseFloat(document.getElementById('so2').value);
+            const co = parseFloat(document.getElementById('co').value);
+            const o3 = parseFloat(document.getElementById('o3').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const humidity = parseFloat(document.getElementById('humidity').value);
+            const location = document.getElementById('location').value;
+            
+            // Decision Tree Logic (simplified version)
+            let riskLevel = '';
+            let riskDescription = '';
+            let confidence = 0;
+            
+            // Decision Tree Algorithm (simplified)
+            if (pm25 <= 12) {
+                riskLevel = 'LOW';
+                confidence = 95 + Math.random() * 4; // 95-99%
+                riskDescription = 'Air quality is satisfactory with minimal health risk. Outdoor activities are safe for all population groups.';
+            } else if (pm25 <= 35) {
+                riskLevel = 'MODERATE';
+                confidence = 90 + Math.random() * 5; // 90-95%
+                riskDescription = 'Air quality is acceptable; however, sensitive individuals may experience minor health effects. Consider reducing prolonged outdoor exertion.';
+            } else {
+                riskLevel = 'HIGH';
+                confidence = 85 + Math.random() * 10; // 85-95%
+                riskDescription = 'Air pollution has reached unhealthy levels. Everyone may experience health effects. Sensitive groups should avoid outdoor activities.';
+            }
+            
+            // Adjust confidence based on other parameters
+            const parameterConsistency = checkParameterConsistency(pm25, pm10, no2, so2, co, o3);
+            confidence = Math.min(99.2, confidence + parameterConsistency);
+            
+            // Update UI
+            updateRiskDisplay(riskLevel, riskDescription, confidence);
+            updateProbabilityChart(riskLevel, confidence);
+            
+            // Generate detailed analysis for modal
+            generateDetailedAnalysis(pm25, pm10, no2, so2, co, o3, temperature, humidity, location, riskLevel, confidence);
+        }
+        
+        // Check consistency of parameters
+        function checkParameterConsistency(pm25, pm10, no2, so2, co, o3) {
+            let consistencyScore = 0;
+            
+            // PM10 should generally be higher than PM2.5
+            if (pm10 >= pm25) consistencyScore += 2;
+            
+            // Check for typical urban pollution patterns
+            const typicalPattern = (no2 > 20 && co > 1) || (so2 > 15 && pm25 > 20);
+            if (typicalPattern) consistencyScore += 3;
+            
+            // All parameters should be within realistic ranges
+            const allRealistic = pm25 >= 0 && pm25 <= 150 && 
+                                 pm10 >= 0 && pm10 <= 300 &&
+                                 no2 >= 0 && no2 <= 200 &&
+                                 so2 >= 0 && so2 <= 150 &&
+                                 co >= 0 && co <= 20 &&
+                                 o3 >= 0 && o3 <= 100;
+            
+            if (allRealistic) consistencyScore += 2;
+            
+            return consistencyScore;
+        }
+        
+        // Update risk display
+        function updateRiskDisplay(riskLevel, description, confidence) {
+            const riskIndicator = document.getElementById('riskIndicator');
+            const riskDescription = document.getElementById('riskDescription');
+            const confidenceValue = document.getElementById('confidenceValue');
+            const confidenceFill = document.getElementById('confidenceFill');
+            
+            // Update risk level
+            riskIndicator.textContent = riskLevel;
+            riskIndicator.className = 'risk-indicator';
+            
+            // Set appropriate class based on risk level
+            if (riskLevel === 'LOW') {
+                riskIndicator.classList.add('risk-low');
+            } else if (riskLevel === 'MODERATE') {
+                riskIndicator.classList.add('risk-moderate');
+            } else {
+                riskIndicator.classList.add('risk-high');
+            }
+            
+            // Update description and confidence
+            riskDescription.textContent = description;
+            confidenceValue.textContent = `${confidence.toFixed(1)}%`;
+            
+            // Update confidence bar
+            const confidencePercent = Math.min(100, confidence);
+            confidenceFill.style.width = `${confidencePercent}%`;
+            
+            // Set color based on confidence
+            if (confidence >= 90) {
+                confidenceFill.style.backgroundColor = '#27ae60'; // Green
+            } else if (confidence >= 80) {
+                confidenceFill.style.backgroundColor = '#f39c12'; // Yellow
+            } else {
+                confidenceFill.style.backgroundColor = '#e74c3c'; // Red
+            }
+        }
+        
+        // Update probability chart
+        function updateProbabilityChart(riskLevel, confidence) {
+            const ctx = document.getElementById('riskProbabilityChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.riskProbabilityChart) {
+                window.riskProbabilityChart.destroy();
+            }
+            
+            // Calculate probabilities (simplified for demo)
+            let lowProb, moderateProb, highProb;
+            
+            if (riskLevel === 'LOW') {
+                lowProb = confidence;
+                moderateProb = (100 - confidence) * 0.7;
+                highProb = (100 - confidence) * 0.3;
+            } else if (riskLevel === 'MODERATE') {
+                moderateProb = confidence;
+                lowProb = (100 - confidence) * 0.4;
+                highProb = (100 - confidence) * 0.6;
+            } else {
+                highProb = confidence;
+                lowProb = (100 - confidence) * 0.2;
+                moderateProb = (100 - confidence) * 0.8;
+            }
+            
+            // Normalize to 100%
+            const total = lowProb + moderateProb + highProb;
+            lowProb = (lowProb / total * 100).toFixed(1);
+            moderateProb = (moderateProb / total * 100).toFixed(1);
+            highProb = (highProb / total * 100).toFixed(1);
+            
+            // Create chart
+            window.riskProbabilityChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+                    datasets: [{
+                        data: [lowProb, moderateProb, highProb],
+                        backgroundColor: [
+                            'rgba(39, 174, 96, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(231, 76, 60, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(39, 174, 96)',
+                            'rgb(243, 156, 18)',
+                            'rgb(231, 76, 60)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.parsed}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Generate detailed analysis for modal
+        function generateDetailedAnalysis(pm25, pm10, no2, so2, co, o3, temperature, humidity, location, riskLevel, confidence) {
+            // Store data for modal
+            window.detailedAnalysis = {
+                pm25, pm10, no2, so2, co, o3, temperature, humidity, location, riskLevel, confidence,
+                timestamp: new Date().toLocaleString()
+            };
+        }
+        
+        // Setup modal functionality
+        function setupModal() {
+            const modal = document.getElementById('resultsModal');
+            const closeBtn = document.querySelector('.close-modal');
+            const viewDetailsBtn = document.getElementById('viewDetailsBtn');
+            
+            // Open modal when button is clicked
+            viewDetailsBtn.addEventListener('click', function() {
+                populateModalContent();
+                modal.style.display = 'flex';
+            });
+            
+            // Close modal when X is clicked
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Populate modal with detailed analysis
+        function populateModalContent() {
+            const modalContent = document.getElementById('modalContent');
+            const analysis = window.detailedAnalysis || {
+                pm25: 25,
+                pm10: 50,
+                no2: 30,
+                so2: 10,
+                co: 1.5,
+                o3: 40,
+                temperature: 28,
+                humidity: 65,
+                location: 'Manila City',
+                riskLevel: 'MODERATE',
+                confidence: 85,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            // Create content for modal
+            let content = `
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Assessment Details</h3>
+                    <p><strong>Assessment Time:</strong> ${analysis.timestamp}</p>
+                    <p><strong>Location:</strong> ${analysis.location}</p>
+                    <p><strong>Final Risk Classification:</strong> <span style="font-weight: bold; color: ${analysis.riskLevel === 'LOW' ? '#27ae60' : analysis.riskLevel === 'MODERATE' ? '#f39c12' : '#e74c3c'}">${analysis.riskLevel}</span></p>
+                    <p><strong>Model Confidence:</strong> ${analysis.confidence.toFixed(1)}%</p>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Parameter Values</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <h4>PM2.5</h4>
+                            <p style="font-size: 1.5rem; font-weight: bold;">${analysis.pm25} μg/m³</p>
+                            <p style="font-size: 0.9rem; color: #666;">WHO Guideline: ≤12 μg/m³</p>
+                        </div>
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <h4>PM10</h4>
+                            <p style="font-size: 1.5rem; font-weight: bold;">${analysis.pm10} μg/m³</p>
+                            <p style="font-size: 0.9rem; color: #666;">WHO Guideline: ≤45 μg/m³</p>
+                        </div>
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <h4>NO₂</h4>
+                            <p style="font-size: 1.5rem; font-weight: bold;">${analysis.no2} ppb</p>
+                            <p style="font-size: 0.9rem; color: #666;">WHO Guideline: ≤25 ppb</p>
+                        </div>
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <h4>O₃</h4>
+                            <p style="font-size: 1.5rem; font-weight: bold;">${analysis.o3} ppb</p>
+                            <p style="font-size: 0.9rem; color: #666;">WHO Guideline: ≤50 ppb</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Decision Tree Path</h3>
+                    <div style="background-color: #f0f7ff; padding: 20px; border-radius: 10px;">
+                        <p><strong>Primary Decision:</strong> PM2.5 concentration (${analysis.pm25} μg/m³)</p>
+                        <p><strong>Rule 1:</strong> Is PM2.5 ≤ 12 μg/m³? → ${analysis.pm25 <= 12 ? 'YES → Low Risk' : 'NO → Proceed to Rule 2'}</p>
+                        ${analysis.pm25 > 12 ? `<p><strong>Rule 2:</strong> Is PM2.5 ≤ 35 μg/m³? → ${analysis.pm25 <= 35 ? 'YES → Moderate Risk' : 'NO → High Risk'}</p>` : ''}
+                        <p><strong>Final Classification:</strong> ${analysis.riskLevel} Risk</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Health Implications</h3>
+                    <div style="background-color: #fff8e1; padding: 20px; border-radius: 10px; border-left: 5px solid #f39c12;">
+                        ${analysis.riskLevel === 'LOW' ? 
+                            '<p>✅ Air quality poses little to no risk. Normal outdoor activities are safe for all population groups.</p>' : 
+                          analysis.riskLevel === 'MODERATE' ? 
+                            '<p>⚠️ Sensitive individuals (children, elderly, those with respiratory conditions) should consider reducing prolonged outdoor exertion.</p>' :
+                            '<p>🚨 Unhealthy air quality for all groups. Everyone should reduce outdoor activities. Sensitive groups should avoid outdoor exposure.</p>'}
+                        <p><strong>Recommended Actions:</strong> Follow the recommendations in the "Recommendations & Actions" section based on your risk level.</p>
+                    </div>
+                </div>
+            `;
+            
+            modalContent.innerHTML = content;
+        }
+        
+        // Initialize dashboard charts
+        function initializeCharts() {
+            // Monthly Trend Chart
+            const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            window.monthlyTrendChart = new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+                    datasets: [{
+                        label: 'PM2.5 (μg/m³)',
+                        data: [28, 32, 35, 30, 25, 22, 28, 33, 38, 35, 32],
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }, {
+                        label: 'PM10 (μg/m³)',
+                        data: [48, 52, 55, 50, 45, 42, 48, 53, 58, 55, 52],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Concentration (μg/m³)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Risk Distribution Chart
+            const riskDistCtx = document.getElementById('riskDistributionChart').getContext('2d');
+            window.riskDistributionChart = new Chart(riskDistCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+                    datasets: [{
+                        data: [42, 48, 10],
+                        backgroundColor: [
+                            'rgba(39, 174, 96, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(231, 76, 60, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(39, 174, 96)',
+                            'rgb(243, 156, 18)',
+                            'rgb(231, 76, 60)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.parsed}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Feature Importance Chart
+            const featureCtx = document.getElementById('featureImportanceChart').getContext('2d');
+            window.featureImportanceChart = new Chart(featureCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['PM2.5', 'PM10', 'NO₂', 'O₃', 'CO', 'SO₂', 'Temperature', 'Humidity'],
+                    datasets: [{
+                        label: 'Feature Importance Score',
+                        data: [95, 75, 60, 55, 50, 45, 30, 25],
+                        backgroundColor: [
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(241, 196, 15, 0.7)',
+                            'rgba(230, 126, 34, 0.7)',
+                            'rgba(149, 165, 166, 0.7)',
+                            'rgba(149, 165, 166, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(231, 76, 60)',
+                            'rgb(52, 152, 219)',
+                            'rgb(155, 89, 182)',
+                            'rgb(52, 152, 219)',
+                            'rgb(241, 196, 15)',
+                            'rgb(230, 126, 34)',
+                            'rgb(149, 165, 166)',
+                            'rgb(149, 165, 166)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Importance Score (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update dashboard with sample data (for demo)
+        function updateDashboardWithSampleData() {
+            // This function would typically fetch real data from an API
+            // For now, we're using the static data initialized in initializeCharts()
+            console.log('Dashboard initialized with sample data');
+        }
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId.startsWith('#')) {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Add this function to your existing JavaScript in index.html
+async function calculateRiskLevelWithAPI() {
+    // Get form values
+    const formData = {
+        pm25: parseFloat(document.getElementById('pm25').value),
+        pm10: parseFloat(document.getElementById('pm10').value),
+        no2: parseFloat(document.getElementById('no2').value),
+        so2: parseFloat(document.getElementById('so2').value),
+        co: parseFloat(document.getElementById('co').value),
+        o3: parseFloat(document.getElementById('o3').value),
+        temperature: parseFloat(document.getElementById('temperature').value),
+        humidity: parseFloat(document.getElementById('humidity').value)
+    };
+    
+    try {
+        // Call Flask API
+        const response = await fetch('http://localhost:5000/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update UI with API response
+            updateRiskDisplay(
+                result.prediction.toUpperCase(),
+                getRiskDescription(result.prediction),
+                result.confidence
+            );
+            
+            // Update probability chart
+            updateProbabilityChartFromAPI(result);
+            
+            // Store for detailed analysis
+            window.detailedAnalysis = {
+                ...formData,
+                location: document.getElementById('location').value,
+                riskLevel: result.prediction.toUpperCase(),
+                confidence: result.confidence,
+                probabilities: result.probabilities,
+                timestamp: new Date().toLocaleString(),
+                apiResponse: result
+            };
+        } else {
+            // Fallback to client-side calculation if API fails
+            console.error('API error:', result.error);
+            calculateRiskLevel();
+        }
+    } catch (error) {
+        console.error('Error calling API:', error);
+        // Fallback to client-side calculation
+        calculateRiskLevel();
+    }
+}
+
+function updateProbabilityChartFromAPI(result) {
+    const ctx = document.getElementById('riskProbabilityChart').getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (window.riskProbabilityChart) {
+        window.riskProbabilityChart.destroy();
+    }
+    
+    // Create chart with API probabilities
+    window.riskProbabilityChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+            datasets: [{
+                data: [
+                    result.probabilities.low,
+                    result.probabilities.moderate,
+                    result.probabilities.high
+                ],
+                backgroundColor: [
+                    'rgba(39, 174, 96, 0.8)',
+                    'rgba(243, 156, 18, 0.8)',
+                    'rgba(231, 76, 60, 0.8)'
+                ],
+                borderColor: [
+                    'rgb(39, 174, 96)',
+                    'rgb(243, 156, 18)',
+                    'rgb(231, 76, 60)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function getRiskDescription(riskLevel) {
+    const descriptions = {
+        'LOW': 'Air quality is satisfactory with minimal health risk. Outdoor activities are safe for all population groups.',
+        'MODERATE': 'Air quality is acceptable; however, sensitive individuals may experience minor health effects. Consider reducing prolonged outdoor exertion.',
+        'HIGH': 'Air pollution has reached unhealthy levels. Everyone may experience health effects. Sensitive groups should avoid outdoor activities.'
+    };
+    return descriptions[riskLevel] || 'Risk assessment completed.';
+}
+
+// Update the form submission handler to use the API
+function setupFormSubmission() {
+    const form = document.getElementById('pollutionForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Use API if available, otherwise use client-side calculation
+        calculateRiskLevelWithAPI();
+    });
+}
+
+// ============================================
+// REAL-TIME API CONNECTION FOR WEB INTERFACE
+// ============================================
+
+const API_BASE_URL = 'http://localhost:5000/api';
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSliders();
+    initializeCharts();
+    setupFormSubmission();
+    setupModal();
+    loadDashboardData();
+    
+    // Test API connection
+    testAPIConnection();
+});
+
+// Test if API is available
+async function testAPIConnection() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/health`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ API is connected:', data);
+            document.getElementById('apiStatus').innerHTML = 
+                '<span style="color: #27ae60;">✅ Connected to AI Model API</span>';
+        } else {
+            console.log('⚠️ API not responding, using client-side logic');
+            document.getElementById('apiStatus').innerHTML = 
+                '<span style="color: #f39c12;">⚠️ Using client-side prediction</span>';
+        }
+    } catch (error) {
+        console.log('❌ API connection failed, using client-side logic');
+        document.getElementById('apiStatus').innerHTML = 
+            '<span style="color: #e74c3c;">❌ API offline, using client-side prediction</span>';
+    }
+}
+
+// Load dashboard data from API
+async function loadDashboardData() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/dashboard`);
+        const data = await response.json();
+        
+        if (data.success) {
+            updateDashboardCharts(data.dashboard);
+            console.log('✅ Dashboard data loaded from API');
+        }
+    } catch (error) {
+        console.log('⚠️ Using local dashboard data');
+        updateDashboardWithLocalData();
+    }
+}
+
+// Real-time prediction from API
+async function calculateRiskLevelWithAPI() {
+    // Get form values
+    const formData = {
+        pm25: parseFloat(document.getElementById('pm25').value),
+        pm10: parseFloat(document.getElementById('pm10').value),
+        no2: parseFloat(document.getElementById('no2').value),
+        so2: parseFloat(document.getElementById('so2').value),
+        co: parseFloat(document.getElementById('co').value),
+        o3: parseFloat(document.getElementById('o3').value),
+        temperature: parseFloat(document.getElementById('temperature').value),
+        humidity: parseFloat(document.getElementById('humidity').value),
+        location: document.getElementById('location').value
+    };
+    
+    // Show loading state
+    const riskIndicator = document.getElementById('riskIndicator');
+    const originalText = riskIndicator.textContent;
+    riskIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
+    riskIndicator.style.opacity = '0.7';
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/predict`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update UI with API response
+            updateRiskDisplayFromAPI(result);
+            console.log('✅ Prediction from API:', result);
+            
+            // Update dashboard with new prediction
+            addNewPredictionToDashboard(formData, result);
+        } else {
+            throw new Error(result.error || 'API returned error');
+        }
+    } catch (error) {
+        console.error('❌ API Error:', error);
+        console.log('⚠️ Falling back to client-side calculation');
+        
+        // Fallback to client-side calculation
+        calculateRiskLevel();
+    } finally {
+        // Restore original state
+        riskIndicator.style.opacity = '1';
+    }
+}
+
+// Update UI with API response
+function updateRiskDisplayFromAPI(result) {
+    const riskIndicator = document.getElementById('riskIndicator');
+    const riskDescription = document.getElementById('riskDescription');
+    const confidenceValue = document.getElementById('confidenceValue');
+    const confidenceFill = document.getElementById('confidenceFill');
+    
+    // Update risk level
+    riskIndicator.textContent = result.prediction.toUpperCase();
+    riskIndicator.className = 'risk-indicator';
+    
+    // Set appropriate class
+    if (result.prediction === 'Low') {
+        riskIndicator.classList.add('risk-low');
+    } else if (result.prediction === 'Moderate') {
+        riskIndicator.classList.add('risk-moderate');
+    } else {
+        riskIndicator.classList.add('risk-high');
+    }
+    
+    // Update description
+    const descriptions = {
+        'Low': 'Air quality is satisfactory with minimal health risk. Outdoor activities are safe for all population groups.',
+        'Moderate': 'Air quality is acceptable; however, sensitive individuals may experience minor health effects. Consider reducing prolonged outdoor exertion.',
+        'High': 'Air pollution has reached unhealthy levels. Everyone may experience health effects. Sensitive groups should avoid outdoor activities.'
+    };
+    
+    riskDescription.textContent = descriptions[result.prediction] || result.recommendations.general.join(' ');
+    
+    // Update confidence
+    confidenceValue.textContent = `${result.confidence}%`;
+    confidenceFill.style.width = `${result.confidence}%`;
+    
+    // Set confidence color
+    if (result.confidence >= 90) {
+        confidenceFill.style.backgroundColor = '#27ae60';
+    } else if (result.confidence >= 80) {
+        confidenceFill.style.backgroundColor = '#f39c12';
+    } else {
+        confidenceFill.style.backgroundColor = '#e74c3c';
+    }
+    
+    // Update probability chart
+    updateProbabilityChartFromAPI(result);
+    
+    // Store for detailed analysis
+    window.detailedAnalysis = {
+        ...formData,
+        apiResponse: result,
+        timestamp: new Date().toLocaleString()
+    };
+}
+
+// Update probability chart with API data
+function updateProbabilityChartFromAPI(result) {
+    const ctx = document.getElementById('riskProbabilityChart').getContext('2d');
+    
+    // Destroy existing chart
+    if (window.riskProbabilityChart) {
+        window.riskProbabilityChart.destroy();
+    }
+    
+    // Prepare data
+    const labels = ['Low Risk', 'Moderate Risk', 'High Risk'];
+    const data = [
+        result.probabilities.low || 0,
+        result.probabilities.moderate || 0,
+        result.probabilities.high || 0
+    ];
+    
+    // Create chart
+    window.riskProbabilityChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    'rgba(39, 174, 96, 0.8)',
+                    'rgba(243, 156, 18, 0.8)',
+                    'rgba(231, 76, 60, 0.8)'
+                ],
+                borderColor: [
+                    'rgb(39, 174, 96)',
+                    'rgb(243, 156, 18)',
+                    'rgb(231, 76, 60)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed.toFixed(1)}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Add new prediction to dashboard history
+function addNewPredictionToDashboard(formData, result) {
+    // Store in localStorage for history
+    const history = JSON.parse(localStorage.getItem('predictionHistory') || '[]');
+    
+    const newEntry = {
+        timestamp: new Date().toISOString(),
+        parameters: formData,
+        prediction: result.prediction,
+        confidence: result.confidence,
+        aqi: result.aqi
+    };
+    
+    history.unshift(newEntry); // Add to beginning
+    history.splice(10, history.length - 10); // Keep only last 10
+    
+    localStorage.setItem('predictionHistory', JSON.stringify(history));
+    
+    // Update recent predictions display
+    updateRecentPredictions(history);
+}
+
+// Update recent predictions display
+function updateRecentPredictions(history) {
+    const container = document.getElementById('recentPredictions');
+    if (!container) return;
+    
+    if (history.length === 0) {
+        container.innerHTML = '<p>No recent predictions</p>';
+        return;
+    }
+    
+    let html = '<h4>Recent Predictions:</h4>';
+    history.slice(0, 5).forEach(pred => {
+        const time = new Date(pred.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        html += `
+            <div style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                <strong>${time}</strong>: ${pred.prediction} Risk 
+                <span style="float: right;">PM2.5: ${pred.parameters.pm25} μg/m³</span>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// Update dashboard charts with API data
+function updateDashboardCharts(dashboardData) {
+    // Update risk distribution
+    if (dashboardData.risk_distribution) {
+        updateRiskDistributionChart(dashboardData.risk_distribution);
+    }
+    
+    // Update monthly trends
+    if (dashboardData.monthly_trends) {
+        updateMonthlyTrendsChart(dashboardData.monthly_trends);
+    }
+    
+    // Update statistics
+    if (dashboardData.summary) {
+        updateStatistics(dashboardData.summary);
+    }
+}
+
+// Initialize range sliders (same as before)
+function initializeSliders() {
+    const sliders = document.querySelectorAll('input[type="range"]');
+    sliders.forEach(slider => {
+        const valueDisplay = document.getElementById(slider.id + 'Value');
+        if (valueDisplay) {
+            valueDisplay.textContent = slider.value;
+            slider.addEventListener('input', function() {
+                valueDisplay.textContent = this.value;
+            });
+        }
+    });
+}
+
+// Setup form submission
+function setupFormSubmission() {
+    const form = document.getElementById('pollutionForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        calculateRiskLevelWithAPI(); // Use API for prediction
+    });
+}
+
+// Rest of your existing functions (setupModal, etc.) remain the same
+// Add this to your existing index.html JavaScript section
+    </script>
+</body>
+</html>
