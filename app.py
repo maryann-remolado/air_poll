@@ -1,22 +1,24 @@
-# app.py - COMPLETELY FIXED VERSION
+# app.py - COMPLETELY FIXED VERSION WITH CORS
 """
 Simplified Flask API for Metro Manila Air Pollution Risk Assessment
 """
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # ADD THIS IMPORT
 import os
 import sys
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Add CORS headers manually
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS')
-    return response
+# ========== ADD THIS: Enable CORS for all routes ==========
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost", "http://127.0.0.1:5500", "http://localhost:5500", "*"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # ========== FIX 1: Initialize ALL variables FIRST ==========
 model = None
@@ -419,4 +421,4 @@ if __name__ == '__main__':
         app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
     except Exception as e:
         print(f"\n❌ Error starting server: {e}")
-        print("\n💡 Install requirements: pip install flask")
+        print("\n💡 Install requirements: pip install flask flask-cors")
